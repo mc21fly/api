@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const mongoURI = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.p6bdk5v.mongodb.net/?retryWrites=true&w=majority&dbName=emailstudio`;
+const mongoURI = `${process.env.DB_URI}`;
 
 mongoose
 	.connect(mongoURI)

@@ -9,8 +9,7 @@
 		"sha.js": "^2.4.11"
 	},
 	"scripts": {
-		"start": "nodemon app.js",
-		"test": "jest"
+		"start": "nodemon app.js"
 	},
 	"name": "api",
 	"version": "1.0.0",
