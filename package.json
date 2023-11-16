@@ -11,5 +11,12 @@
 	"scripts": {
 		"start": "nodemon app.js",
 		"test": "jest"
-	}
+	},
+	"name": "api",
+	"version": "1.0.0",
+	"description": "API",
+	"main": "app.js",
+	"devDependencies": {},
+	"author": "",
+	"license": "ISC"
 }
