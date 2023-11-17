@@ -23,7 +23,9 @@ const middlewares = {
 	authorizeToken: require('./src/middlewares/authorizeToken'),
 };
 
-app.use(express.json());
+app.use(express.json(), (err, req, res, next) => {
+	return res.status(500).json(Response(500, 'Internal server error'));
+});
 
 // Define routes with middleware
 app.use('/register', routes.register);
@@ -35,7 +37,7 @@ app.use('/snippets', middlewares.authorizeToken, routes.snippets);
 app.use('/users', middlewares.authorizeToken, routes.users);
 
 app.all('/*', (req, res) => {
-	res.status(404).json(Response(404, 'Route not found', null, 999999));
+	return res.status(404).json(Response(404, 'Route not found', null, 999999));
 });
 
 const PORT = process.env.PORT || 3000;

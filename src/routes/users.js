@@ -3,7 +3,7 @@ const route = express.Router();
 const shajs = require('sha.js');
 
 // Utils
-const Response = require('../utils/Response');
+const Response = require('../utils/response');
 
 // Models
 const UserModel = require('../models/user');
@@ -28,7 +28,7 @@ route.get('/:username', async (req, res) => {
 		// Send Response containing found user
 		res.status(200).json(Response(200, 'User found', foundUser));
 	} catch (e) {
-		res.status(500).json(Response(500, 'Internal error'));
+		res.status(500).json(Response(500, 'Internal server error'));
 	}
 });
 
@@ -93,7 +93,7 @@ route.put('/:username', authenticateUser, async (req, res) => {
 		// Send Response with updated user
 		res.status(200).json(Response(200, 'User updated', updatedUser));
 	} catch (e) {
-		res.status(500).json(Response(500, 'Internal error'));
+		res.status(500).json(Response(500, 'Internal server error'));
 	}
 });
 

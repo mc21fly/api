@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 // Utils
-const Response = require('../utils/Response');
+const Response = require('../utils/response');
 
 function authorizeMiddleware(req, res, next) {
 	// Destructure request

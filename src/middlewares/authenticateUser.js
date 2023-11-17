@@ -1,5 +1,5 @@
 // Utils
-const Response = require('../utils/Response');
+const Response = require('../utils/response');
 
 function authenticateUser(req, res, next) {
 	// Destructure request

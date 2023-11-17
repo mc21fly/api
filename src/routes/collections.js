@@ -3,7 +3,7 @@ const route = express.Router();
 const mongoose = require('mongoose');
 
 // Utils
-const Response = require('../utils/Response');
+const Response = require('../utils/response');
 
 // Models
 const CollectionModel = require('../models/collection');

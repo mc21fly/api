@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 // Utils
-const Response = require('../utils/Response');
+const Response = require('../utils/response');
 
 // Models
 const UserModel = require('../models/user');
@@ -56,7 +56,7 @@ route.post('/', validateLogin, async (req, res) => {
 		// Send Response containing user token
 		return res.status(200).json(Response(200, 'User found', { token }));
 	} catch (e) {
-		res.status(500).json(Response(500, 'Internal error'));
+		res.status(500).json(Response(500, 'Internal server error'));
 	}
 });
 

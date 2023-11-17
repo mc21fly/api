@@ -2,7 +2,7 @@ const express = require('express');
 const route = express.Router();
 
 // Utils
-const Response = require('../utils/Response');
+const Response = require('../utils/response');
 
 route.post('/', (req, res) => {
 	res.status(200).json(Response(200, 'Logout sucessfull'));
