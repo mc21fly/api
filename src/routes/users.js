@@ -1,6 +1,7 @@
 const express = require('express');
 const route = express.Router();
 const shajs = require('sha.js');
+const crypto = require('crypto');
 
 // Utils
 const Response = require('../utils/response');
@@ -70,8 +71,43 @@ route.put('/:username', authenticateUser, async (req, res) => {
 	}
 });
 
-route.delete('/:username', authenticateUser, (req, res) => {
-	res.status(200).json({ method: 'DELETE' });
+route.delete('/:username', authenticateUser, async (req, res) => {
+	// Destructure request
+	const { username } = req.params;
+	const { body } = req;
+
+	try {
+		// Validate input
+		const validated = await UserModel.validate(body, ['password']);
+
+		// Find user
+		const foundUser = await UserModel.findOne({ username });
+
+		// Check if password matches
+		const hashedPassword = shajs('SHA256').update(validated.password).digest('hex');
+		const passwordMatch = crypto.timingSafeEqual(
+			Buffer.from(foundUser.password, 'hex'),
+			Buffer.from(hashedPassword, 'hex')
+		);
+
+		if (!passwordMatch) {
+			return res.status(401).json(Response(401, 'Incorrect password'));
+		}
+
+		// Delete user
+		const { deletedCount } = await UserModel.deleteOne({ username, password: hashedPassword });
+
+		if (deletedCount) {
+			return res.status(200).json(Response(200, 'User deleted'));
+		}
+		return res.status(200).json(Response(200, 'User not deleted'));
+	} catch (e) {
+		if (e.name === 'ValidationError') {
+			return res.status(400).json(Response(400, e.message));
+		}
+		console.log(e);
+		res.status(500).json(Response(500, 'Internal server error'));
+	}
 });
 
 route.all('/', (req, res) => {
