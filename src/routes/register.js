@@ -9,14 +9,14 @@ const UserModel = require('../models/user');
 
 route.post('/', async (req, res) => {
 	// Destructure request
-	const { body: user } = req;
+	const { body } = req;
 
 	try {
 		// Validate input
-		await UserModel.validate(user, ['username', 'password', 'details.name']);
+		const validated = await UserModel.validate(body, ['username', 'password', 'details.name']);
 
 		// Save new user
-		const { _id } = await new UserModel(user).save();
+		const { _id } = await new UserModel(validated).save();
 
 		// Send response containing new user id
 		res.status(201).json(Response(201, 'User registered', { id: _id }));

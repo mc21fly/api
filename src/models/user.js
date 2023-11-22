@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			minlength: 5,
-			maxlength: 24,
+			maxlength: 50,
 			trim: true,
 		},
 		details: {
@@ -36,6 +36,14 @@ const UserSchema = new mongoose.Schema(
 UserSchema.pre('save', async function () {
 	// Hash password
 	this.password = shajs('sha256').update(this.password).digest('hex');
+});
+
+UserSchema.pre('updateOne', async function () {
+	// Hash password
+	const { password } = this.getUpdate();
+	if (password) {
+		password = shajs('sha256').update(password).digest('hex');
+	}
 });
 
 const UserModel = mongoose.model('User', UserSchema);

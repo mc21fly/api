@@ -12,11 +12,9 @@ const UserModel = require('../models/user');
 const authenticateUser = require('../middlewares/authenticateUser');
 
 route.get('/:username', async (req, res) => {
-	// Destructure request
-	const { params } = req;
-	const { username } = params;
-
 	try {
+		const { username } = req.params;
+
 		// Find user
 		const foundUser = await UserModel.findOne({ username }).select('-password');
 
@@ -36,52 +34,24 @@ route.put('/:username', authenticateUser, async (req, res) => {
 	// Destructure request
 	const { username } = res.locals.user;
 	const { body } = req;
-	const { password, details } = body;
-
-	console.log(password, details);
 
 	try {
 		let fieldsToUpdate = {};
 
-		// Check if at least one field is present
-		if (!password && !details) {
-			return res.status(400).json(Response(400, 'At least one field requested'));
+		// Validate input
+		if (body.details && body.details.name) {
+			const validated = await UserModel.validate(body, ['details.name']);
+			fieldsToUpdate.details = validated.details;
 		}
 
-		// Validate 'password'
-		if (password) {
-			// Trim 'password'
-			const trimmedPassword = String(password).trim();
-
-			// Check trimmed password length
-			if (trimmedPassword.length < 5 || trimmedPassword.length > 50) {
-				return res.status(400).json(Response(400, 'Password length invalid'));
-			}
-
-			// Hash password
-			const hashedPassword = shajs('sha256').update(trimmedPassword).digest('hex');
-
-			fieldsToUpdate.password = hashedPassword;
+		if (body.password) {
+			const validated = await UserModel.validate(body, ['password']);
+			fieldsToUpdate.password = validated.password;
 		}
 
-		// Validate 'details.name'
-		if (details) {
-			// Check if 'name' field is present
-			if (!details.name) {
-				return res.status(400).json(Response(400, 'First name required'));
-			}
-
-			// Trim 'name'
-			const trimmedName = String(details.name).trim();
-
-			// Check trimmed name
-			if (trimmedName.length < 2 || trimmedName > 24) {
-				return res.status(400).json(Response(400, 'First name length invalid'));
-			}
-
-			fieldsToUpdate.details = {
-				name: trimmedName,
-			};
+		// Check if there are some fields to update
+		if (!Object.entries(fieldsToUpdate).length) {
+			return res.status(400).json(Response(400, 'Fields to update required'));
 		}
 
 		// Update requested fields
@@ -93,6 +63,9 @@ route.put('/:username', authenticateUser, async (req, res) => {
 		// Send Response with updated user
 		res.status(200).json(Response(200, 'User updated', updatedUser));
 	} catch (e) {
+		if (e.name === 'ValidationError') {
+			return res.status(400).json(Response(400, e.message));
+		}
 		res.status(500).json(Response(500, 'Internal server error'));
 	}
 });
